@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memento Mori Calendar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page { size: legal portrait; margin: 0; }
+
+  html {
+    font-family: 'Inter', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ═════════════════════════════════════���════
+     CONFIG PANEL — hidden when printing
+     ════════════════════════════��═════════════ */
+  .config-panel {
+    width: 100%;
+    max-width: 600px;
+    padding: 40px 32px 32px;
+    margin: 0 auto;
+  }
+
+  .config-brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .config-brand .ornament {
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: #b8860b;
+    margin-bottom: 8px;
+  }
+
+  .config-brand h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 28pt;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .config-brand p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12pt;
+    font-style: italic;
+    color: #888;
+    line-height: 1.4;
+  }
+
+  .config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11pt;
+    font-weight: 600;
+    color: #444;
+    letter-spacing: 1px;
+  }
+
+  .field label small {
+    font-weight: 300;
+    font-style: italic;
+    color: #aaa;
+    letter-spacing: 0;
+  }
+
+  .field input,
+  .field textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 10pt;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: #b8860b;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 60px;
+    line-height: 1.5;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 16px;
+  }
+
+  .field-row .field {
+    flex: 1;
+  }
+
+  .btn-print {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13pt;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #fff;
+    background: #1a1a1a;
+    border: none;
+    border-radius: 4px;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-print:hover {
+    background: #b8860b;
+  }
+
+  .btn-print:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+
+  .config-divider {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ccc, transparent);
+    margin: 32px auto;
+  }
+
+  /* ══════════════════════════════════════════
+     CALENDAR — the printable page
+     ══════════════════════════════════════════ */
+  .calendar-page {
+    width: 216mm;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4mm 4mm 3mm 4mm;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 1mm;
+    width: 100%;
+  }
+
+  .header .ornament {
+    font-size: 8px;
+    letter-spacing: 6px;
+    color: #b8860b;
+    margin-bottom: 1mm;
+  }
+
+  .header .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 26pt;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+
+  .header .divider {
+    width: 50%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b8860b, transparent);
+    margin: 1mm auto;
+  }
+
+  /* ── Quote ── */
+  .quote-section {
+    text-align: center;
+    margin-bottom: 1mm;
+    max-width: 85%;
+  }
+
+  .quote-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13pt;
+    font-style: italic;
+    color: #333;
+    line-height: 1.3;
+  }
+
+  .quote-author-display {
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 1mm;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 5mm;
+    margin-bottom: 1mm;
+    font-size: 6pt;
+    color: #777;
+    letter-spacing: 0.5px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 1mm;
+  }
+
+  .legend-box {
+    width: 6px;
+    height: 6px;
+  }
+
+  .legend-box.lived { background: #2c2c2c; }
+  .legend-box.remaining { border: 1px solid #ccc; background: #fff; }
+
+  /* ── Grid ── */
+  .grid-container {
+    display: flex;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .year-labels {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1mm;
+  }
+
+  .year-label {
+    font-size: 5pt;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .year-label.decade {
+    color: #888;
+    font-weight: 500;
+  }
+
+  .grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .week-header {
+    display: flex;
+    width: 100%;
+    margin-bottom: 1px;
+  }
+
+  .week-header span {
+    font-size: 4pt;
+    color: #ccc;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+    background: #ddd;
+    gap: 1px;
+    padding: 1px;
+    line-height: 0;
+    font-size: 0;
+  }
+
+  .row {
+    display: flex;
+    gap: 1px;
+  }
+
+  .cell {
+    background: #fff;
+  }
+
+  .cell.lived {
+    background: #2c2c2c;
+  }
+
+  .cell.current {
+    background: #b8860b;
+  }
+
+  .row.decade-row {
+    margin-top: 1px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: auto;
+    text-align: center;
+    width: 100%;
+    padding-top: 1mm;
+  }
+
+  .footer-divider {
+    width: 30%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ddd, transparent);
+    margin: 0 auto 1mm auto;
+  }
+
+  .footer-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 7pt;
+    color: #bbb;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .footer-sub {
+    font-size: 5pt;
+    color: #ccc;
+    letter-spacing: 1px;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 40mm 20mm;
+    width: 100%;
+  }
+
+  .empty-state .icon {
+    font-size: 32pt;
+    color: #ddd;
+    margin-bottom: 4mm;
+  }
+
+  .empty-state p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14pt;
+    color: #bbb;
+    font-style: italic;
+  }
+
+  /* ══════════════════════════════════════════
+     SCREEN vs PRINT
+     ══════════════════════════════════════════ */
+  @media screen {
+    .calendar-page {
+      margin-bottom: 40px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+  }
+
+  @media print {
+    html {
+      background: #fff;
+    }
+
+    body {
+      width: 216mm;
+      height: 356mm;
+      overflow: hidden;
+    }
+
+    .config-panel,
+    .config-divider {
+      display: none !important;
+    }
+
+    .calendar-page {
+      width: 216mm;
+      height: 356mm;
+      padding: 4mm 4mm 3mm 4mm;
+      box-shadow: none;
+    }
+  }
+
+  /* ── Responsive config panel ── */
+  @media screen and (max-width: 500px) {
+    .config-panel {
+      padding: 24px 16px 20px;
+    }
+
+    .config-brand h1 {
+      font-size: 22pt;
+      letter-spacing: 4px;
+    }
+
+    .field-row {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ CONFIG PANEL ═══ -->
+<div class="config-panel">
+  <div class="config-brand">
+    <div class="ornament">&#10022; &#9760; &#10022;</div>
+    <h1>Memento Mori</h1>
+    <p>Your life in weeks. One page. On your wall.</p>
+  </div>
+
+  <form class="config-form" onsubmit="return false">
+    <div class="field">
+      <label>Date of Birth</label>
+      <input type="date" id="inputDob" required>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Life Expectancy <small>(years)</small></label>
+        <input type="number" id="inputYears" value="80" min="50" max="120" step="1">
+      </div>
+      <div class="field">
+        <label>Quote Author <small>(optional)</small></label>
+        <input type="text" id="inputAuthor" value="Marcus Aurelius, Meditations">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Quote <small>(optional)</small></label>
+      <textarea id="inputQuote">You could leave life right now. Let that determine what you do and say and think.</textarea>
+    </div>
+
+    <button class="btn-print" id="btnPrint" disabled onclick="window.print()">
+      Print My Calendar
+    </button>
+  </form>
+</div>
+
+<div class="config-divider"></div>
+
+<!-- ═══ CALENDAR PAGE ═══ -->
+<div class="calendar-page" id="calendarPage">
+
+  <div class="header">
+    <div class="ornament">&#10022; &#9760; &#10022;</div>
+    <div class="title">Memento Mori</div>
+    <div class="divider"></div>
+  </div>
+
+  <div class="quote-section" id="quoteSection">
+    <div class="quote-text" id="quoteDisplay"></div>
+    <div class="quote-author-display" id="authorDisplay"></div>
+  </div>
+
+  <div class="legend" id="legendSection">
+    <div class="legend-item"><div class="legend-box lived"></div> Weeks Lived</div>
+    <div class="legend-item"><div class="legend-box remaining"></div> Weeks Remaining</div>
+  </div>
+
+  <div class="grid-container" id="gridContainer">
+    <div class="year-labels" id="yearLabels"></div>
+    <div class="grid-wrapper">
+      <div class="week-header" id="weekHeader"></div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-divider"></div>
+    <div class="footer-text">Each box is one week &middot; Fill one in every Sunday</div>
+    <div class="footer-sub" id="footerSub"></div>
+  </div>
+
+  <!-- Empty state shown when no DOB is entered -->
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="icon">&#9760;</div>
+    <p>Enter your date of birth above<br>to generate your calendar.</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── DOM references ──
+  const inputDob    = document.getElementById('inputDob');
+  const inputYears  = document.getElementById('inputYears');
+  const inputQuote  = document.getElementById('inputQuote');
+  const inputAuthor = document.getElementById('inputAuthor');
+  const btnPrint    = document.getElementById('btnPrint');
+
+  const quoteDisplay    = document.getElementById('quoteDisplay');
+  const authorDisplay   = document.getElementById('authorDisplay');
+  const quoteSection    = document.getElementById('quoteSection');
+  const legendSection   = document.getElementById('legendSection');
+  const gridContainer   = document.getElementById('gridContainer');
+  const yearLabelsEl    = document.getElementById('yearLabels');
+  const weekHeaderEl    = document.getElementById('weekHeader');
+  const gridEl          = document.getElementById('grid');
+  const footerSub       = document.getElementById('footerSub');
+  const emptyState      = document.getElementById('emptyState');
+  const calendarPage    = document.getElementById('calendarPage');
+
+  const WEEKS_PER_ROW = 52;
+  const MS_PER_WEEK   = 7 * 24 * 60 * 60 * 1000;
+
+  // ── URL parameter support ──
+  function readParams() {
+    const p = new URLSearchParams(window.location.search);
+    if (p.get('dob'))    inputDob.value    = p.get('dob');
+    if (p.get('years'))  inputYears.value  = p.get('years');
+    if (p.get('quote'))  inputQuote.value  = p.get('quote');
+    if (p.get('author')) inputAuthor.value = p.get('author');
+  }
+
+  function updateParams() {
+    const p = new URLSearchParams();
+    if (inputDob.value)    p.set('dob',    inputDob.value);
+    if (inputYears.value && inputYears.value !== '80') p.set('years', inputYears.value);
+    const defaultQuote = 'You could leave life right now. Let that determine what you do and say and think.';
+    if (inputQuote.value && inputQuote.value !== defaultQuote) p.set('quote', inputQuote.value);
+    if (inputAuthor.value && inputAuthor.value !== 'Marcus Aurelius, Meditations') p.set('author', inputAuthor.value);
+    const qs = p.toString();
+    const url = window.location.pathname + (qs ? '?' + qs : '');
+    history.replaceState(null, '', url);
+  }
+
+  // ── Render the calendar ──
+  function renderCalendar() {
+    const dobStr         = inputDob.value;
+    const lifeExpectancy = parseInt(inputYears.value) || 80;
+    const quoteText      = inputQuote.value.trim();
+    const quoteAuthorVal = inputAuthor.value.trim();
+
+    // Update quote display
+    if (quoteText) {
+      quoteDisplay.innerHTML = '&ldquo;' + escapeHtml(quoteText) + '&rdquo;';
+      quoteSection.style.display = '';
+    } else {
+      quoteSection.style.display = 'none';
+    }
+
+    if (quoteAuthorVal) {
+      authorDisplay.textContent = '\u2014 ' + quoteAuthorVal;
+      authorDisplay.style.display = '';
+    } else {
+      authorDisplay.style.display = 'none';
+    }
+
+    // No DOB? Show empty state
+    if (!dobStr) {
+      emptyState.style.display = '';
+      gridContainer.style.display = 'none';
+      legendSection.style.display = 'none';
+      footerSub.textContent = '';
+      btnPrint.disabled = true;
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    gridContainer.style.display = '';
+    legendSection.style.display = '';
+    btnPrint.disabled = false;
+
+    const birthDate  = new Date(dobStr + 'T00:00:00');
+    const totalRows  = lifeExpectancy;
+    const totalWeeks = lifeExpectancy * WEEKS_PER_ROW;
+    const today      = new Date();
+    const weeksLived = Math.floor((today - birthDate) / MS_PER_WEEK);
+
+    // Cell sizes — fit legal paper (216mm × 356mm)
+    // Usable: ~208mm wide, ~315mm tall for grid
+    const CELL_W_MM = 3.7;
+    const CELL_H_MM = 3.8;
+
+    // Clear previous grid
+    yearLabelsEl.innerHTML = '';
+    weekHeaderEl.innerHTML = '';
+    gridEl.innerHTML = '';
+
+    // Inject dynamic sizes (remove previous if exists)
+    let sizeStyle = document.getElementById('dynamicSizes');
+    if (sizeStyle) sizeStyle.remove();
+    sizeStyle = document.createElement('style');
+    sizeStyle.id = 'dynamicSizes';
+    sizeStyle.textContent = `
+      .cell { width: ${CELL_W_MM}mm; height: ${CELL_H_MM}mm; }
+      .year-label { height: ${CELL_H_MM}mm; }
+      .week-header span { width: ${CELL_W_MM}mm; }
+    `;
+    document.head.appendChild(sizeStyle);
+
+    // Week header — show every 4th
+    for (let w = 0; w < WEEKS_PER_ROW; w++) {
+      const span = document.createElement('span');
+      if ((w + 1) % 4 === 0) span.textContent = w + 1;
+      weekHeaderEl.appendChild(span);
+    }
+
+    // Year labels — show decades
+    for (let y = 0; y < totalRows; y++) {
+      const label = document.createElement('div');
+      label.className = 'year-label' + (y % 10 === 0 ? ' decade' : '');
+      if (y % 10 === 0) label.textContent = y;
+      yearLabelsEl.appendChild(label);
+    }
+
+    // Grid cells
+    for (let y = 0; y < totalRows; y++) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      if (y % 10 === 0) row.classList.add('decade-row');
+      for (let w = 0; w < WEEKS_PER_ROW; w++) {
+        const weekIndex = y * WEEKS_PER_ROW + w;
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        if (weekIndex < weeksLived) cell.classList.add('lived');
+        if (weekIndex === weeksLived) cell.classList.add('current');
+        row.appendChild(cell);
+      }
+      gridEl.appendChild(row);
+    }
+
+    // Footer info
+    const opts     = { month: 'long', day: 'numeric', year: 'numeric' };
+    const birthStr = birthDate.toLocaleDateString('en-US', opts);
+    footerSub.textContent = `Born ${birthStr}  \u00B7  ${lifeExpectancy} years  \u00B7  ${totalWeeks.toLocaleString()} weeks`;
+
+    updateParams();
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ── Debounced render ──
+  let debounceTimer;
+  function debouncedRender() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(renderCalendar, 300);
+  }
+
+  // ── Event listeners ──
+  inputDob.addEventListener('input', renderCalendar);
+  inputYears.addEventListener('input', debouncedRender);
+  inputQuote.addEventListener('input', debouncedRender);
+  inputAuthor.addEventListener('input', debouncedRender);
+
+  // ── Initialize ──
+  readParams();
+  renderCalendar();
+})();
+</script>
+
+</body>
+</html>
