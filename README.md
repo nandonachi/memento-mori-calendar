@@ -50,7 +50,7 @@ That's it. Your life calendar is ready to hang on the wall.
 Your settings are saved in the URL automatically. Bookmark it or share it:
 
 ```
-index.html?dob=1990-10-01&years=85&quote=Your+custom+quote&author=Someone
+index.html?dob=2000-01-15&years=85&quote=Your+custom+quote&author=Someone
 ```
 
 ---

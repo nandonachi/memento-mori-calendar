@@ -30,7 +30,7 @@ Then open http://localhost:8000 (for options 1/2) in a browser. Chrome or Edge g
 
 1. User opens the page and sees a **config panel** at the top (date of birth, life expectancy, quote, author)
 2. Entering a DOB **live-renders** the calendar grid below — no page reload needed
-3. Config is encoded in **URL parameters** (`?dob=1990-10-01&years=80`) for bookmarking/sharing
+3. Config is encoded in **URL parameters** (`?dob=2000-01-15&years=80`) for bookmarking/sharing
 4. Clicking **"Print My Calendar"** triggers `window.print()` — the config panel is hidden via `@media print`, only the calendar prints
 5. Calendar is sized in **mm units** to fit exactly on one US Legal page
 
